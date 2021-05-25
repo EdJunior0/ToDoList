@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_gravity="center_vertical"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:id="@+id/linearLayour">
+
+
+    <RelativeLayout
+        android:layout_width="358dp"
+        android:layout_height="40dp">
+
+        <Button
+            android:id="@+id/buttonCheckBox"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Adicionar uma tarefa"
+            android:textColor="#fff"
+            android:background="@drawable/layout_border4"/>
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/layout_border3">
+        </ImageView>
+
+    </RelativeLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>
