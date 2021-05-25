@@ -21,6 +21,7 @@ public class DatabaseAcess {
     public static final String _ID = "_id";
     public static final String _ID_TASK_COMPLETE = "_id_tasks_complete";
     public static final String TASKS = "tasks";
+    String[] parametros;
 
     public DatabaseAcess(Context context, String TABLE){
         this.openHelper = new BancoController(context);
@@ -72,11 +73,18 @@ public class DatabaseAcess {
         }
     }
 
-    public void insertTable(Task task){
-        Task task1 = new Task();
+    public void insertTable(String task){
         ContentValues values = new ContentValues();
-        values.put(TASKS, task.task);
+        values.put(TASKS, task);
         database.insertOrThrow(TABLE, null, values);
+        database.close();
+    }
+
+    public void deleteTask(int id){
+
+        parametros = new String[1];
+        parametros[0] = String.valueOf(id);
+        database.delete(TABLE, "_id = ?", parametros);
     }
 
 }

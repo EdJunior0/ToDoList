@@ -2,16 +2,20 @@ package com.DataFlair.dataflairtodolist;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -51,11 +55,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TaskList = (ListView) findViewById(R.id.list_todo);
+        database = new DatabaseAcess(this, "tasks");
 
-        //updateUI();
         setAdapter();
-
         buttonAdd = (Button) findViewById(R.id.addTask);
         buttonAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,9 +68,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showAlertDialogButtonClicked(View view) {
+        database.open();
         // setup the alert builder
-        final DatabaseAcess databaseAcess = DatabaseAcess.getInstance(getApplicationContext(), "tasks");
-        databaseAcess.open();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final EditText taskEdit = new EditText(getApplicationContext());
         builder.setTitle("Add a new task");
@@ -77,9 +78,8 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Task task = new Task();
-                task.task = String.valueOf(taskEdit.getText());
-                database = new DatabaseAcess(getApplicationContext(), "tasks");
+                String task;
+                task = String.valueOf(taskEdit.getText());
                 database.insertTable(task);
                 setAdapter();
             }
@@ -95,7 +95,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -105,60 +104,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void setAdapter() {
-        //setOnClickListener();
+        setOnClickListener();
         database = new DatabaseAcess(this, "tasks");
         tasksAdded = database.returnAllTask();
         SpeciesRecycler = findViewById(R.id.speciesRecycler);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
-        SpeciesRecycler.setLayoutManager(gridLayoutManager);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        SpeciesRecycler.setLayoutManager(layoutManager);
         SpeciesRecycler.setHasFixedSize(true);
         adapter = new SpeciesViewAdapter(this, tasksAdded, listener);
         SpeciesRecycler.setAdapter(adapter);
     }
 
-//    private void setOnClickListener() {
-//        listener = (v, position) -> {
-//            Intent intent = new Intent(getApplicationContext(), InfAdicionais.class);
-//            intent.putExtra("selected_specie", speciesAdded.get(position));
-//            Log.d("Name", speciesAdded.get(position).identificacao);
-//            startActivity(intent);
-//        };
-//    }
-
-//    public void deleteTask(View view) {
-//        View parent = (View) view.getParent();
-//        TextView taskTextView = (TextView) parent.findViewById(R.id.title_task);
-//        String task = String.valueOf(taskTextView.getText());
-//        SQLiteDatabase db = taskHelper.getWritableDatabase();
-//        ContentValues values = new ContentValues();
-//        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-//        db.delete(TaskContract.TaskEntry.TABLE, TaskContract.TaskEntry.COL_TASK_TITLE + " = ?", new String[]{task});
-//        db.close();
-//        setAdapter();
-//        //updateUI();
-//    }
-
-//    private void updateUI() {
-//        ArrayList<String> taskList = new ArrayList<>();
-//        SQLiteDatabase db = taskHelper.getReadableDatabase();
-//        Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-//                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
-//                null, null, null, null, null);
-//        while (cursor.moveToNext()) {
-//            int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-//            taskList.add(cursor.getString(idx));
-//        }
-//
-//        if (arrAdapter == null) {
-//            arrAdapter = new ArrayAdapter<>(this, R.layout.todo_task, R.id.title_task, taskList);
-//            TaskList.setAdapter(arrAdapter);
-//        } else {
-//            arrAdapter.clear();
-//            arrAdapter.addAll(taskList);
-//            arrAdapter.notifyDataSetChanged();
-//        }
-//
-//        cursor.close();
-//        db.close();
-//    }
+    private void setOnClickListener() {
+        listener = new SpeciesViewAdapter.ClickListenerFeature() {
+            @Override
+            public void onClick(View v, int position) {
+                database.open();
+                int positionTask;
+                positionTask = tasksAdded.get(position)._id;
+                database.deleteTask(positionTask);
+                setAdapter();
+            }
+        };
+    }
 }

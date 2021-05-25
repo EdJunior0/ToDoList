@@ -17,12 +17,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.DataFlair.dataflairtodolist.R;
 
+import org.w3c.dom.Text;
+
+import java.util.ArrayList;
 import java.util.List;
 
 class SpeciesViewAdapter extends RecyclerView.Adapter<SpeciesViewAdapter.SpeciesViewHolder> {
 
     private Context context;
-    private List<Task> taskResult;
+    private List<Task> taskResult = new ArrayList<>();
     private ClickListenerFeature listener;
 
     public SpeciesViewAdapter(Context context, List<Task> taskResult, ClickListenerFeature listener){
@@ -44,20 +47,22 @@ class SpeciesViewAdapter extends RecyclerView.Adapter<SpeciesViewAdapter.Species
         holder.taskText.setText(taskResult.get(position).task);
     }
 
-    @Override
     public int getItemCount() {
-        return taskResult.size();
+        if(taskResult == null){
+            return 0;
+        } else {
+            return taskResult.size();
+        }
     }
 
     public class SpeciesViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        TextView textId;
-        Button taskText;
+        TextView taskText;
 
         public SpeciesViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            taskText = itemView.findViewById((R.id.buttonCheckBox));
+            taskText = itemView.findViewById((R.id.textList));
             itemView.setOnClickListener(this);
         }
 
